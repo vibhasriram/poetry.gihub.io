@@ -79,12 +79,22 @@
             border-radius: 16px 16px 0 0;
         }
 
+        .card-icon {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            font-size: 1.5rem;
+            opacity: 0.7;
+            z-index: 2;
+        }
+
         .card-title {
             font-size: 1.3rem;
             font-weight: 700;
             color: #2d3748;
             margin-bottom: 1rem;
             text-align: center;
+            margin-top: 2rem;
         }
 
         .card-content {
@@ -357,6 +367,12 @@
             poems.sort((a, b) => b.date - a.date);
         }
 
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
         function renderCards() {
             const container = document.getElementById('cards-container');
             container.innerHTML = '';
@@ -364,11 +380,13 @@
             poems.forEach((poem, index) => {
                 const card = document.createElement('div');
                 const colorClass = `color-${(index % 10) + 1}`;
+                const icon = getConsistentIcon(poem.title);
                 
                 card.className = `card ${colorClass}`;
                 card.onclick = () => openModal(poem, colorClass);
 
                 card.innerHTML = `
+                    <div class="card-icon">${icon}</div>
                     <div class="card-title">${escapeHtml(poem.title)}</div>
                     <div class="card-content">${processContent(poem.content)}</div>
                 `;
@@ -432,10 +450,29 @@
             });
         }
 
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
+        function getRandomIcon() {
+            const icons = [
+                '🌙', '🌟', '✨', '🌸', '🍃', '🌊', '🔥', '💫', '🦋', '🌺',
+                '🌻', '🌹', '🌷', '🌿', '🍂', '🌾', '☀️', '🌤️', '🌈', '⭐',
+                '💎', '🕊️', '🦢', '🌰', '🍄', '🌵', '🌲', '🌳', '🌴', '🎋',
+                '🏔️', '🌋', '🏖️', '🌅', '🌄', '🌇', '🌃', '🌌', '🎭', '🎨',
+                '🎪', '🎯', '🎲', '🎸', '🎹', '🎵', '🎶', '🎤', '📜', '📖',
+                '✒️', '🖋️', '🖊️', '📝', '💌', '💝', '🎁', '🗝️', '🔮', '⚡'
+            ];
+            return icons[Math.floor(Math.random() * icons.length)];
+        }
+
+        function getConsistentIcon(title) {
+            const icons = [
+                '🌙', '🌟', '✨', '🌸', '🍃', '🌊', '🔥', '💫', '🦋', '🌺',
+                '🌻', '🌹', '🌷', '🌿', '🍂', '🌾', '☀️', '🌤️', '🌈', '⭐',
+                '💎', '🕊️', '🦢', '🌰', '🍄', '🌵', '🌲', '🌳', '🌴', '🎋',
+                '🏔️', '🌋', '🏖️', '🌅', '🌄', '🌇', '🌃', '🌌', '🎭', '🎨',
+                '🎪', '🎯', '🎲', '🎸', '🎹', '🎵', '🎶', '🎤', '📜', '📖',
+                '✒️', '🖋️', '🖊️', '📝', '💌', '💝', '🎁', '🗝️', '🔮', '⚡'
+            ];
+            const seed = title.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
+            return icons[seed % icons.length];
         }
 
         function openModal(poem, colorClass) {
@@ -445,7 +482,10 @@
             // Apply same color scheme to modal
             modalContent.className = `modal-content ${colorClass}`;
             
-            document.getElementById('modal-title').textContent = poem.title;
+            // Use consistent icon for modal
+            const modalIcon = getConsistentIcon(poem.title);
+            
+            document.getElementById('modal-title').innerHTML = `${modalIcon} ${poem.title}`;
             document.getElementById('modal-text').innerHTML = processContent(poem.content);
             modal.style.display = 'block';
         }
