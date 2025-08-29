@@ -1,526 +1,600 @@
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Delius&display=swap" rel="stylesheet">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vibha's Poetry Collection</title>
-    
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-  font-family: "Delius", cursive;
-            background: white;
-            min-height: 100vh;
-            line-height: 1.6;
-        }
-
-        .header {
-            text-align: center;
-            padding: 1rem;
-            background: white;
-            margin-bottom: 1rem;
-        }
-
-        .header h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #2d3748;
-            margin-bottom: 0.5rem;
-        }
-
-        .header p {
-            color: #718096;
-            font-size: 1.1rem;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 1rem;
-        }
-
-        .cards-grid {
-            position: relative;
-            margin-bottom: 2rem;
-        }
-
-        .card {
-            background: white;
-            border-radius: 16px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            position: absolute;
-            overflow: hidden;
-            width: calc(33.333% - 1rem);
-        }
-
-        .card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            border-radius: 16px 16px 0 0;
-        }
-
-        .card-title {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: #2d3748;
-            margin-bottom: 1rem;
-            margin-top: 0;
-            text-align: left;
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-        }
-
-        .card-icon {
-            font-size: 1.5rem;
-            opacity: 0.8;
-        }
-
-        .card-content {
-            color: #4a5568;
-            white-space: pre-line;
-        }
-
-        .card-content img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 8px;
-            margin: 0.5rem 0;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(5px);
-            z-index: 1000;
-            padding: 1rem;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 20px;
-            max-width: 800px;
-            max-height: 90vh;
-            margin: 5vh auto;
-            padding: 2rem;
-            position: relative;
-            overflow-y: auto;
-            animation: modalSlideIn 0.3s ease;
-        }
-
-        @keyframes modalSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-50px);
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Poetry Collection</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link href="https://fonts.googleapis.com/css2?family=Limelight&display=swap" rel="stylesheet" />
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
             }
-            to {
-                opacity: 1;
-                transform: translateY(0);
+
+            body {
+                font-family: "Limelight", sans-serif;
+                background: #f8fafc;
+                min-height: 100vh;
+                line-height: 1.6;
             }
-        }
 
-        .modal-close {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: #e2e8f0;
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            font-size: 1.2rem;
-            cursor: pointer;
-            color: #4a5568;
-            transition: all 0.2s ease;
-        }
+            .header {
+                text-align: center;
+                padding: 2rem 1rem;
+                background: white;
+                margin-bottom: 2rem;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            }
 
-        .modal-close:hover {
-            background: #cbd5e0;
-            transform: scale(1.1);
-        }
-
-        .modal-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #2d3748;
-            margin-bottom: 1.5rem;
-            text-align: center;
-        }
-
-        .modal-text {
-            color: #4a5568;
-            font-size: 1.1rem;
-            line-height: 1.8;
-            white-space: pre-line;
-        }
-
-        .modal-text img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 12px;
-            margin: 1rem 0;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 3rem;
-            color: #718096;
-            font-size: 1.1rem;
-        }
-
-        .error {
-            text-align: center;
-            padding: 3rem;
-            color: #e53e3e;
-            font-size: 1.1rem;
-        }
-
-        /* Mobile styles */
-        @media (max-width: 768px) {
             .header h1 {
-                font-size: 2rem;
+                font-size: 2.5rem;
+                font-weight: 700;
+                color: #2d3748;
+                margin-bottom: 0.5rem;
+            }
+
+            .header p {
+                color: #718096;
+                font-size: 1.1rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .search-container {
+                max-width: 400px;
+                margin: 0 auto;
+                position: relative;
+            }
+
+            .search-input {
+                width: 100%;
+                padding: 0.75rem 1rem;
+                font-size: 1rem;
+                border: 2px solid #e2e8f0;
+                border-radius: 25px;
+                background: white;
+                font-family: "Limelight", sans-serif;
+                transition: all 0.3s ease;
+            }
+
+            .search-input:focus {
+                outline: none;
+                border-color: #99b7bb;
+                box-shadow: 0 0 0 3px rgba(153, 183, 187, 0.1);
+            }
+
+            .search-input::placeholder {
+                color: #9ca3af;
+            }
+
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 0 1rem;
             }
 
             .cards-grid {
-                position: relative !important;
-                height: auto !important;
+                position: relative;
+                margin-bottom: 2rem;
             }
 
             .card {
-                position: relative !important;
-                width: 100% !important;
-                left: 0 !important;
-                top: 0 !important;
-                margin-bottom: 1rem !important;
+                background: white;
+                border-radius: 1px;
+                overflow: hidden;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+                position: absolute;
+                width: calc(33.333% - 1rem);
+                border: 1px solid #000;
+                opacity: 1;
+            }
+
+            .card.hidden {
+                opacity: 0.3;
+                pointer-events: none;
+            }
+
+            .card:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+            }
+
+            .card-header {
+                font-size: 1.3rem;
+                font-weight: 700;
+                color: #2d3748;
+                margin: 0.5rem 1rem;
+                text-align: left;
+                display: flex;
+                align-items: center;
+                gap: 0.25rem;
+                border-bottom: 1px solid #2d3748;
+                padding-bottom: 0.5rem;
+            }
+
+            .card-title {
+                font-size: 1.2rem;
+                font-weight: 600;
+                color: #2d3748;
+                margin: 0;
+            }
+
+            .card-content {
+                padding: 1.5rem;
+                background: #99b7bb;
+                border-bottom: 1px solid #e2e8f0;
+                color: #374151;
+                white-space: pre-line;
+                min-height: 120px;
+                margin: 0 10px 0;
+            }
+
+            .card-footer {
+                padding: 0.75rem 1.5rem;
+                background: white;
+                text-align: center;
+            }
+
+            .card-tag {
+                color: #6b7280;
+                font-size: 0.875rem;
+                font-weight: 500;
+            }
+
+            .highlight {
+                background-color: #fbbf24;
+                padding: 2px 4px;
+                border-radius: 3px;
+                font-weight: bold;
+            }
+
+            .no-results {
+                text-align: center;
+                padding: 3rem;
+                color: #718096;
+                font-size: 1.1rem;
+                display: none;
+            }
+
+            .modal {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                backdrop-filter: blur(5px);
+                z-index: 1000;
+                padding: 1rem;
             }
 
             .modal-content {
-                margin: 2vh auto;
-                max-height: 96vh;
-                padding: 1.5rem;
+                background: white;
+                border-radius: 16px;
+                max-width: 600px;
+                max-height: 90vh;
+                margin: 5vh auto;
+                position: relative;
+                overflow: hidden;
+                animation: modalSlideIn 0.3s ease;
+            }
+
+            @keyframes modalSlideIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-50px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .modal-close {
+                position: absolute;
+                top: 1rem;
+                right: 1rem;
+                background: #f1f5f9;
+                border: none;
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                font-size: 1.5rem;
+                cursor: pointer;
+                color: #64748b;
+                transition: all 0.2s ease;
+                z-index: 10;
+            }
+
+            .modal-close:hover {
+                background: #e2e8f0;
+                transform: scale(1.1);
+            }
+
+            .modal-header {
+                padding: 2rem 2rem 0;
+                background: white;
+                border-bottom: 1px solid #e2e8f0;
             }
 
             .modal-title {
                 font-size: 1.5rem;
+                font-weight: 700;
+                color: #2d3748;
+                margin: 0 0 2rem 0;
+                text-align: center;
             }
-        }
 
-        /* Light pastel color classes */
-        .color-1 { background: linear-gradient(135deg, #fef7f7 0%, #fdf2f8 100%); }
-        .color-2 { background: linear-gradient(135deg, #f0f9ff 0%, #f8fafc 100%); }
-        .color-3 { background: linear-gradient(135deg, #f7fee7 0%, #f0fdf4 100%); }
-        .color-4 { background: linear-gradient(135deg, #fffbeb 0%, #fefce8 100%); }
-        .color-5 { background: linear-gradient(135deg, #fef3f2 0%, #fff7ed 100%); }
-        .color-6 { background: linear-gradient(135deg, #f3f4f6 0%, #f9fafb 100%); }
-        .color-7 { background: linear-gradient(135deg, #faf5ff 0%, #f8fafc 100%); }
-        .color-8 { background: linear-gradient(135deg, #ecfdf5 0%, #f0fdfa 100%); }
-        .color-9 { background: linear-gradient(135deg, #fdf4ff 0%, #fef7f0 100%); }
-        .color-10 { background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%); }
+            .modal-body {
+                padding: 2rem;
+                background: #f0f9ff;
+                border-bottom: 1px solid #e2e8f0;
+                overflow-y: auto;
+                max-height: 60vh;
+            }
 
-        /* Very subtle accent colors for card tops */
-        .color-1::before { background: #fecaca; }
-        .color-2::before { background: #bfdbfe; }
-        .color-3::before { background: #bbf7d0; }
-        .color-4::before { background: #fde68a; }
-        .color-5::before { background: #fed7aa; }
-        .color-6::before { background: #d1d5db; }
-        .color-7::before { background: #e9d5ff; }
-        .color-8::before { background: #6ee7b7; }
-        .color-9::before { background: #f3e8ff; }
-        .color-10::before { background: #93c5fd; }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>Poetry Collection</h1>
-        <p>A curated selection of verses and reflections</p>
-    </div>
+            .modal-text {
+                color: #374151;
+                font-size: 1.1rem;
+                line-height: 1.8;
+                white-space: pre-line;
+            }
 
-    <div class="container">
-        <div id="loading" class="loading">Loading poems...</div>
-        <div id="error" class="error" style="display: none;">Failed to load poems. Make sure .txt files exist in /data/ directory.</div>
-        <div id="cards-container" class="cards-grid"></div>
-    </div>
+            .modal-footer {
+                padding: 1rem 2rem;
+                background: white;
+                text-align: center;
+            }
 
-    <!-- Modal -->
-    <div id="modal" class="modal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeModal()">&times;</button>
-            <h2 id="modal-title" class="modal-title"></h2>
-            <div id="modal-text" class="modal-text"></div>
+            .modal-tag {
+                color: #6b7280;
+                font-size: 0.875rem;
+                font-weight: 500;
+            }
+
+            .loading {
+                text-align: center;
+                padding: 3rem;
+                color: #718096;
+                font-size: 1.1rem;
+            }
+
+            .error {
+                text-align: center;
+                padding: 3rem;
+                color: #e53e3e;
+                font-size: 1.1rem;
+                display: none;
+            }
+
+            .hidden {
+                display: none;
+            }
+
+            /* Mobile styles */
+            @media (max-width: 768px) {
+                .header h1 {
+                    font-size: 2rem;
+                }
+
+                .cards-grid {
+                    position: relative !important;
+                    height: auto !important;
+                }
+
+                .card {
+                    position: relative !important;
+                    width: 100% !important;
+                    left: 0 !important;
+                    top: 0 !important;
+                    margin-bottom: 1rem !important;
+                }
+
+                .modal-content {
+                    margin: 2vh auto;
+                    max-height: 96vh;
+                }
+
+                .modal-header,
+                .modal-body,
+                .modal-footer {
+                    padding-left: 1.5rem;
+                    padding-right: 1.5rem;
+                }
+
+                .modal-title {
+                    font-size: 1.3rem;
+                }
+
+                .search-container {
+                    max-width: 100%;
+                    padding: 0 .5rem;
+                }
+            }
+
+            @media (max-width: 1024px) and (min-width: 769px) {
+                .card {
+                    width: calc(50% - 1rem) !important;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <h1>Vibha's Poetry</h1>
+            <p>A curated selection of verses and reflections</p>
+            <div class="search-container">
+                <input 
+                    type="text" 
+                    class="search-input" 
+                    placeholder="Search poems..." 
+                    id="searchInput"
+                />
+            </div>
         </div>
-    </div>
 
-    <script>
-        let poems = [];
+        <div class="container">
+            <div id="loading" class="loading">Loading poems...</div>
+            <div id="error" class="error">Failed to load poems. Make sure .txt files exist in /data/ directory.</div>
+            <div id="no-results" class="no-results">No poems found matching your search.</div>
+            <div id="cards-container" class="cards-grid"></div>
+        </div>
 
-        async function loadPoems() {
-            try {
-                // Get list of txt files from data directory
-                const fileList = await getFileList();
-                
-                for (const filename of fileList) {
-                    try {
-                        const response = await fetch(`data/${filename}`);
-                        if (response.ok) {
-                            const text = await response.text();
-                            parsePoems(text, filename);
+        <!-- Modal -->
+        <div id="modal" class="modal">
+            <div class="modal-content">
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+                <div class="modal-header">
+                    <h2 id="modal-title" class="modal-title"></h2>
+                </div>
+                <div class="modal-body">
+                    <div id="modal-text" class="modal-text"></div>
+                </div>
+                <div class="modal-footer">
+                    <span class="modal-tag">Vibha's Poetry</span>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            let poems = [];
+            let allPoems = []; // Keep original data for search
+
+            async function loadPoems() {
+                try {
+                    // Get list of txt files from data directory
+                    const manifestResponse = await fetch('data/files.json');
+                    if (!manifestResponse.ok) {
+                        throw new Error('files.json not found');
+                    }
+                    const manifest = await manifestResponse.json();
+                    const fileList = manifest.files || [];
+                    
+                    for (const filename of fileList) {
+                        try {
+                            const response = await fetch(`data/${filename}`);
+                            if (response.ok) {
+                                const text = await response.text();
+                                parsePoems(text, filename);
+                            }
+                        } catch (error) {
+                            console.warn(`Failed to load ${filename}:`, error);
                         }
-                    } catch (error) {
-                        console.warn(`Failed to load ${filename}:`, error);
+                    }
+                    
+                    // Sort by date, newest first
+                    poems.sort((a, b) => b.date - a.date);
+                    allPoems = [...poems]; // Keep copy for search
+                    
+                    renderCards();
+                    document.getElementById('loading').style.display = 'none';
+                    
+                    if (poems.length === 0) {
+                        document.getElementById('error').style.display = 'block';
+                    }
+                } catch (error) {
+                    console.error('Error loading poems:', error);
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('error').style.display = 'block';
+                }
+            }
+
+            function parsePoems(text, filename) {
+                const sections = text.split('---').filter(section => section.trim());
+                
+                // If no sections found, treat entire file as one poem
+                if (sections.length === 0 && text.trim()) {
+                    sections.push(text.trim());
+                }
+
+                sections.forEach(section => {
+                    const lines = section.trim().split('\n');
+                    let title = '';
+                    let content = '';
+                    let date = new Date();
+
+                    // Extract title - support multiple formats
+                    const titleMatch = section.match(/(?:<title>(.*?)<\/title>|title:\s*(.+)|^(.+))/im);
+                    if (titleMatch) {
+                        title = (titleMatch[1] || titleMatch[2] || titleMatch[3]).trim();
+                        // Remove title line from content if it was the first line
+                        const contentLines = lines.slice(1);
+                        content = contentLines.join('\n').trim();
+                        
+                        // If content is empty, use the whole text except title markers
+                        if (!content) {
+                            content = section.replace(/(?:<title>.*?<\/title>|title:\s*.+)/i, '').trim();
+                        }
+                    } else {
+                        // Use filename (without extension) as title if no title found
+                        title = filename.replace(/\.txt$/, '').replace(/[_-]/g, ' ');
+                        content = section.trim();
+                    }
+
+                    // Extract date if present (format: YYYY-MM-DD)
+                    const dateMatch = section.match(/(\d{4}-\d{2}-\d{2})/);
+                    if (dateMatch) {
+                        date = new Date(dateMatch[1]);
+                        content = content.replace(/\d{4}-\d{2}-\d{2}/, '').trim();
+                    }
+
+                    if (title && content) {
+                        poems.push({
+                            title,
+                            content,
+                            date,
+                            filename
+                        });
+                    }
+                });
+            }
+
+            function highlightText(text, query) {
+                if (!query) return escapeHtml(text);
+                
+                const escapedText = escapeHtml(text);
+                const escapedQuery = escapeHtml(query);
+                const regex = new RegExp(`(${escapedQuery})`, 'gi');
+                return escapedText.replace(regex, '<span class="highlight">$1</span>');
+            }
+
+            function searchPoems(query) {
+                if (!query.trim()) {
+                    poems = [...allPoems];
+                    document.getElementById('no-results').style.display = 'none';
+                } else {
+                    const lowerQuery = query.toLowerCase();
+                    poems = allPoems.filter(poem => 
+                        poem.title.toLowerCase().includes(lowerQuery) ||
+                        poem.content.toLowerCase().includes(lowerQuery)
+                    );
+                    
+                    if (poems.length === 0) {
+                        document.getElementById('no-results').style.display = 'block';
+                    } else {
+                        document.getElementById('no-results').style.display = 'none';
                     }
                 }
                 
-                renderCards();
-                document.getElementById('loading').style.display = 'none';
-            } catch (error) {
-                console.error('Error loading poems:', error);
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('error').style.display = 'block';
-            }
-        }
-
-        async function getFileList() {
-            try {
-                const manifestResponse = await fetch('data/files.json');
-                if (!manifestResponse.ok) {
-                    throw new Error('files.json not found');
-                }
-                const manifest = await manifestResponse.json();
-                return manifest.files || [];
-            } catch (error) {
-                console.error('Error loading files.json:', error);
-                return [];
-            }
-        }
-
-        function parsePoems(text, filename) {
-            const sections = text.split('---').filter(section => section.trim());
-            
-            // If no sections found, treat entire file as one poem
-            if (sections.length === 0 && text.trim()) {
-                sections.push(text.trim());
+                renderCards(query);
             }
 
-            sections.forEach(section => {
-                const lines = section.trim().split('\n');
-                let title = '';
-                let content = '';
-                let date = new Date();
+            function renderCards(searchQuery = '') {
+                const container = document.getElementById("cards-container");
+                container.innerHTML = "";
 
-                // Extract title - support both formats
-                const titleMatch = section.match(/(?:<title>(.*?)<\/title>|title:\s*(.+))/i);
-                if (titleMatch) {
-                    title = (titleMatch[1] || titleMatch[2]).trim();
-                    // Remove title line from content
-                    content = section.replace(/(?:<title>.*?<\/title>|title:\s*.+)/i, '').trim();
-                } else {
-                    // Use filename (without extension) as title if no title found
-                    title = filename.replace(/\.txt$/, '').replace(/[_-]/g, ' ');
-                    content = section.trim();
-                }
+                poems.forEach((poem, index) => {
+                    const card = document.createElement("div");
+                    card.className = "card";
+                    card.onclick = () => openModal(poem);
 
-                // Extract date if present (format: YYYY-MM-DD)
-                const dateMatch = section.match(/(\d{4}-\d{2}-\d{2})/);
-                if (dateMatch) {
-                    date = new Date(dateMatch[1]);
-                    content = content.replace(/\d{4}-\d{2}-\d{2}/, '').trim();
-                }
+                    const highlightedTitle = highlightText(poem.title, searchQuery);
+                    const highlightedContent = highlightText(poem.content, searchQuery);
 
-                if (title && content) {
-                    poems.push({
-                        title,
-                        content,
-                        date,
-                        filename
-                    });
-                }
-            });
-
-            // Sort by date, newest first
-            poems.sort((a, b) => b.date - a.date);
-        }
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        function renderCards() {
-            const container = document.getElementById('cards-container');
-            container.innerHTML = '';
-
-            poems.forEach((poem, index) => {
-                const card = document.createElement('div');
-                const colorClass = `color-${(index % 10) + 1}`;
-                const icon = getConsistentIcon(poem.title);
-                
-                card.className = `card ${colorClass}`;
-                card.onclick = () => openModal(poem, colorClass);
-
-                card.innerHTML = `
-                    <div class="card-title">
-                        <span class="card-icon">${icon}</span>
-                        <span>${escapeHtml(poem.title)}</span>
+                    card.innerHTML = `
+                    <div class="card-header">
+                        <h3 class="card-title">${highlightedTitle}</h3>
                     </div>
-                    <div class="card-content">${processContent(poem.content)}</div>
+                    <div class="card-content">${highlightedContent}</div>
+                    <div class="card-footer">
+                        <span class="card-tag">#vibhapoetry</span>
+                    </div>
                 `;
 
-                container.appendChild(card);
-            });
-
-            // Apply masonry layout after cards are rendered
-            setTimeout(masonryLayout, 100);
-        }
-
-        function masonryLayout() {
-            const container = document.getElementById('cards-container');
-            const cards = container.querySelectorAll('.card');
-            const gap = 24;
-            const screenWidth = window.innerWidth;
-            
-            // Mobile: use simple stacking
-            if (screenWidth <= 768) {
-                let currentTop = 0;
-                cards.forEach(card => {
-                    card.style.position = 'relative';
-                    card.style.left = '0';
-                    card.style.top = '0';
-                    card.style.width = '100%';
-                    card.style.marginBottom = '1rem';
-                    currentTop += card.offsetHeight + 16;
+                    container.appendChild(card);
                 });
-                container.style.height = 'auto';
-                return;
+
+                // Apply masonry layout after cards are rendered
+                setTimeout(masonryLayout, 100);
             }
 
-            // Desktop/Tablet: use masonry
-            const cols = screenWidth <= 1024 ? 2 : 3;
-            const colWidth = container.offsetWidth / cols;
-            const colHeights = new Array(cols).fill(0);
+            function masonryLayout() {
+                const container = document.getElementById("cards-container");
+                const cards = container.querySelectorAll(".card");
+                const gap = 16;
+                const screenWidth = window.innerWidth;
 
-            cards.forEach((card, index) => {
-                const shortestCol = colHeights.indexOf(Math.min(...colHeights));
-                
-                card.style.position = 'absolute';
-                card.style.left = `${shortestCol * colWidth}px`;
-                card.style.top = `${colHeights[shortestCol]}px`;
-                card.style.width = `${colWidth - gap}px`;
-                card.style.marginBottom = '0';
-                
-                colHeights[shortestCol] += card.offsetHeight + gap;
-            });
-
-            container.style.height = `${Math.max(...colHeights)}px`;
-        }
-
-        function processContent(content) {
-            // Simple HTML processing - resize images
-            return content.replace(/<img([^>]*)>/gi, (match, attrs) => {
-                // Add max-width style if not present
-                if (!attrs.includes('style=')) {
-                    return `<img${attrs} style="max-width: 100%; height: auto;">`;
+                // Mobile: use simple stacking
+                if (screenWidth <= 768) {
+                    cards.forEach((card) => {
+                        card.style.position = "relative";
+                        card.style.left = "0";
+                        card.style.top = "0";
+                        card.style.width = "100%";
+                    });
+                    container.style.height = "auto";
+                    return;
                 }
-                return match;
+
+                // Desktop/Tablet: use masonry
+                const cols = screenWidth <= 1024 ? 2 : 3;
+                const colWidth = container.offsetWidth / cols;
+                const colHeights = new Array(cols).fill(0);
+
+                cards.forEach((card) => {
+                    const shortestCol = colHeights.indexOf(Math.min(...colHeights));
+
+                    card.style.position = "absolute";
+                    card.style.left = `${shortestCol * colWidth}px`;
+                    card.style.top = `${colHeights[shortestCol]}px`;
+                    card.style.width = `${colWidth - gap}px`;
+
+                    colHeights[shortestCol] += card.offsetHeight + gap;
+                });
+
+                container.style.height = `${Math.max(...colHeights)}px`;
+            }
+
+            function escapeHtml(text) {
+                const div = document.createElement("div");
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            function openModal(poem) {
+                document.getElementById("modal-title").textContent = poem.title;
+                document.getElementById("modal-text").textContent = poem.content;
+                document.getElementById("modal").style.display = "block";
+            }
+
+            function closeModal() {
+                document.getElementById("modal").style.display = "none";
+            }
+
+            // Search functionality
+            document.getElementById('searchInput').addEventListener('input', function(e) {
+                const query = e.target.value;
+                searchPoems(query);
             });
-        }
 
-        function getRandomIcon() {
-            const icons = [
-                '🌙', '🌟', '✨', '🌸', '🍃', '🌊', '🔥', '💫', '🦋', '🌺',
-                '🌻', '🌹', '🌷', '🌿', '🍂', '🌾', '☀️', '🌤️', '🌈', '⭐',
-                '💎', '🕊️', '🦢', '🌰', '🍄', '🌵', '🌲', '🌳', '🌴', '🎋',
-                '🏔️', '🌋', '🏖️', '🌅', '🌄', '🌇', '🌃', '🌌', '🎭', '🎨',
-                '🎪', '🎯', '🎲', '🎸', '🎹', '🎵', '🎶', '🎤', '📜', '📖',
-                '✒️', '🖋️', '🖊️', '📝', '💌', '💝', '🎁', '🗝️', '🔮', '⚡'
-            ];
-            return icons[Math.floor(Math.random() * icons.length)];
-        }
+            // Close modal when clicking outside
+            document.getElementById("modal").onclick = function (e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            };
 
-        function getConsistentIcon(title) {
-            const icons = [
-                '🌙', '🌟', '✨', '🌸', '🍃', '🌊', '🔥', '💫', '🦋', '🌺',
-                '🌻', '🌹', '🌷', '🌿', '🍂', '🌾', '☀️', '🌤️', '🌈', '⭐',
-                '💎', '🕊️', '🦢', '🌰', '🍄', '🌵', '🌲', '🌳', '🌴', '🎋',
-                '🏔️', '🌋', '🏖️', '🌅', '🌄', '🌇', '🌃', '🌌', '🎭', '🎨',
-                '🎪', '🎯', '🎲', '🎸', '🎹', '🎵', '🎶', '🎤', '📜', '📖',
-                '✒️', '🖋️', '🖊️', '📝', '💌', '💝', '🎁', '🗝️', '🔮', '⚡'
-            ];
-            const seed = title.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
-            return icons[seed % icons.length];
-        }
+            // Close modal with Escape key
+            document.addEventListener("keydown", function (e) {
+                if (e.key === "Escape") {
+                    closeModal();
+                }
+            });
 
-        function openModal(poem, colorClass) {
-            const modal = document.getElementById('modal');
-            const modalContent = modal.querySelector('.modal-content');
-            
-            // Apply same color scheme to modal
-            modalContent.className = `modal-content ${colorClass}`;
-            
-            // Use consistent icon for modal
-            const modalIcon = getConsistentIcon(poem.title);
-            
-            document.getElementById('modal-title').innerHTML = `${modalIcon} ${poem.title}`;
-            document.getElementById('modal-text').innerHTML = processContent(poem.content);
-            modal.style.display = 'block';
-        }
+            // Resize handler
+            window.addEventListener("resize", () => {
+                setTimeout(masonryLayout, 100);
+            });
 
-        function closeModal() {
-            const modal = document.getElementById('modal');
-            const modalContent = modal.querySelector('.modal-content');
-            
-            // Remove color classes when closing
-            modalContent.className = 'modal-content';
-            modal.style.display = 'none';
-        }
-
-        // Close modal when clicking outside
-        document.getElementById('modal').onclick = function(e) {
-            if (e.target === this) {
-                closeModal();
-            }
-        };
-
-        // Close modal with Escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeModal();
-            }
-        });
-
-        // Resize handler
-        window.addEventListener('resize', () => {
-            setTimeout(masonryLayout, 100);
-        });
-
-        // Load poems when page loads
-        loadPoems();
-    </script>
-</body>
+            // Load poems when page loads
+            document.addEventListener("DOMContentLoaded", function () {
+                loadPoems();
+            });
+        </script>
+    </body>
 </html>
